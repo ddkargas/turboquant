@@ -1,10 +1,12 @@
 import sys
-# Κάνουμε την "πειρατεία" στη μνήμη με το TurboQuant
+import runpy
+
+# 1. Κάνουμε την "πειρατεία" στη μνήμη (Monkey Patch)
 import turboquant.integration.vllm 
 
-# Φορτώνουμε τον επίσημο server του vLLM
-from vllm.entrypoints.openai.api_server import main
-
 if __name__ == "__main__":
-    # Ξεκινάει ο server και περιμένει εντολές από το GPUStack
-    main()
+    # 2. Διορθώνουμε το όνομα για να μην μπερδευτεί το vLLM με τις παραμέτρους
+    sys.argv[0] = "vllm.entrypoints.openai.api_server"
+    
+    # 3. Ξεκινάμε τον επίσημο server με ασφάλεια
+    runpy.run_module("vllm.entrypoints.openai.api_server", run_name="__main__", alter_sys=True)
